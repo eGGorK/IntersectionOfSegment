@@ -91,12 +91,12 @@ public:
     }
     
     Vector3D getvec() const {
-        return Vector3D(end - start);
+        return end - start;
     }
 };
 
 double getParametr(const Vector3D& vec, const Segment3D& sgm);
-Vector3D Interseption(const Segment3D& sgm1, const Segment3D& sgm2);
+Vector3D Intersection(const Segment3D& sgm1, const Segment3D& sgm2);
 
 
 enum TypeOfCollinear {
@@ -106,6 +106,6 @@ enum TypeOfCollinear {
     SGMNTSPARALLEL = 1
 };
 
-TypeOfCollinear DefineTypeOfCollnear(const Segment3D& sgm1, const Segment3D sgm2);
+TypeOfCollinear DefineTypeOfCollnear(const Segment3D& sgm1, const Segment3D& sgm2);
 
 #endif

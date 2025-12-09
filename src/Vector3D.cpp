@@ -41,7 +41,7 @@ double getParametr(const Vector3D& vec, const Segment3D& sgm) {
 }
 
 
-TypeOfCollinear DefineTypeOfCollnear(const Segment3D& sgm1, const Segment3D sgm2) {
+TypeOfCollinear DefineTypeOfCollnear(const Segment3D& sgm1, const Segment3D& sgm2) {
     Vector3D v1 = sgm1.getvec();
     Vector3D v2 = sgm2.getvec();
     Vector3D v3 = sgm1.getStart() - sgm2.getStart();
@@ -67,25 +67,25 @@ TypeOfCollinear DefineTypeOfCollnear(const Segment3D& sgm1, const Segment3D sgm2
     return SGMNTSPARALLEL;
 }
 
-Vector3D Interseption(const Segment3D& sgm1, const Segment3D& sgm2) {
+Vector3D Intersection(const Segment3D& sgm1, const Segment3D& sgm2) {
     
     Vector3D v1 = sgm1.getEnd() - sgm1.getStart();
     Vector3D v2 = sgm2.getEnd() - sgm2.getStart();
     Vector3D connection = sgm2.getStart() - sgm1.getStart();
 
     if (Coplanarity(v1,v2,connection) == false) {
-        throw std::invalid_argument("No Interseption. Non-coplanar segments");
+        throw std::invalid_argument("No Intersection. Non-coplanar segments");
     }
 
     if (Collinearity(v1,v2) == true) { 
         TypeOfCollinear type = DefineTypeOfCollnear(sgm1,sgm2);
         switch (type) {
             case SGMNTSPARALLEL:
-                throw std::invalid_argument("No Interseption. Segments are parallel.");
+                throw std::invalid_argument("No Intersection. Segments are parallel.");
             case SGMNTSONONELINE:
-                throw std::invalid_argument("No Interseption.");
+                throw std::invalid_argument("No Intersection.");
             case SGMNTSOVERLAP:
-                throw std::invalid_argument("Infinity Interseption. Segment overlaing.");
+                throw std::invalid_argument("Infinity Intersection. Segment overlaing.");
             case SGMNTSTOUCH:
                 if (sgm1.getStart() == sgm2.getStart() || sgm1.getStart() == sgm2.getEnd()) return sgm1.getStart();
                 if (sgm1.getEnd() == sgm2.getStart() || sgm1.getEnd() == sgm2.getEnd()) return sgm1.getEnd();
@@ -114,5 +114,5 @@ Vector3D Interseption(const Segment3D& sgm1, const Segment3D& sgm2) {
     if (t_v1 >= 0.0 && t_v1 <= 1.0 && t_v2 >= 0.0 && t_v2 <= 1.0) {
         return sgm1.getStart() + t_v1 * v1;
     }
-throw std::invalid_argument("No Interseption.");
+throw std::invalid_argument("No Intersection.");
 }
