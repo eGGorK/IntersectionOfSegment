@@ -1,11 +1,9 @@
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
+#pragma once
 
 #include <iostream>
 #include <optional>
 #include <exception>
 #include <math.h>
-#include <vector>
 
 extern const double eps;
 
@@ -121,6 +119,3 @@ enum TypeOfCollinear {
 };
 
 TypeOfCollinear DefineTypeOfCollnear(const Segment3D& sgm1, const Segment3D& sgm2);
-
-
-#endif
