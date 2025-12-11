@@ -37,7 +37,7 @@ public:
     Vector3D operator/(const double scalar) const {
         return Vector3D(x / scalar, y / scalar, z / scalar);
     }
-    const double& operator[](size_t indx) const {
+    double operator[](size_t indx) const {
         switch (indx)
         {
         case 0: return x;
@@ -78,7 +78,7 @@ public:
     Segment3D() = delete;
     Segment3D(Vector3D p_start, Vector3D p_end): start(p_start), end(p_end) {
         if ((p_end - p_start).IsZero()) {
-            throw std::invalid_argument("Segment cannot be degenerate (a point)");
+            throw std::invalid_argument("Сan't create a segment");
         }
     }
 
@@ -95,8 +95,22 @@ public:
     }
 };
 
+enum class IntersectionResult {
+    INTERSECTION = 0,
+    NONCOMPLANAR = 1,
+    PARALLEL = 2,
+    COLLINEARNOOVERLAP = 3,
+    OVERLAPPING = 4,
+    NOINTERSECTION = 5   
+};
+
+struct IntersectionInfo {
+    IntersectionResult result;
+    std::optional<Vector3D> point;
+};
+
 double getParametr(const Vector3D& vec, const Segment3D& sgm);
-Vector3D Intersection(const Segment3D& sgm1, const Segment3D& sgm2);
+IntersectionInfo Intersection(const Segment3D& sgm1, const Segment3D& sgm2);
 
 
 enum TypeOfCollinear {
@@ -107,5 +121,6 @@ enum TypeOfCollinear {
 };
 
 TypeOfCollinear DefineTypeOfCollnear(const Segment3D& sgm1, const Segment3D& sgm2);
+
 
 #endif

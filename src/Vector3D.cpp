@@ -67,31 +67,50 @@ TypeOfCollinear DefineTypeOfCollnear(const Segment3D& sgm1, const Segment3D& sgm
     return SGMNTSPARALLEL;
 }
 
-Vector3D Intersection(const Segment3D& sgm1, const Segment3D& sgm2) {
-    
+IntersectionInfo Intersection(const Segment3D& sgm1, const Segment3D& sgm2) {
+    IntersectionInfo info;
+
     Vector3D v1 = sgm1.getEnd() - sgm1.getStart();
     Vector3D v2 = sgm2.getEnd() - sgm2.getStart();
     Vector3D connection = sgm2.getStart() - sgm1.getStart();
 
+    //Сheck that the segments lie in the same plane.
     if (Coplanarity(v1,v2,connection) == false) {
-        throw std::invalid_argument("No Intersection. Non-coplanar segments");
+        info.result = IntersectionResult::NONCOMPLANAR;
+        return info;
     }
 
+    //Сheck all types of collinear segments
     if (Collinearity(v1,v2) == true) { 
         TypeOfCollinear type = DefineTypeOfCollnear(sgm1,sgm2);
         switch (type) {
-            case SGMNTSPARALLEL:
-                throw std::invalid_argument("No Intersection. Segments are parallel.");
-            case SGMNTSONONELINE:
-                throw std::invalid_argument("No Intersection.");
-            case SGMNTSOVERLAP:
-                throw std::invalid_argument("Infinity Intersection. Segment overlaing.");
-            case SGMNTSTOUCH:
-                if (sgm1.getStart() == sgm2.getStart() || sgm1.getStart() == sgm2.getEnd()) return sgm1.getStart();
-                if (sgm1.getEnd() == sgm2.getStart() || sgm1.getEnd() == sgm2.getEnd()) return sgm1.getEnd();
+            case TypeOfCollinear::SGMNTSPARALLEL:
+                info.result = IntersectionResult::PARALLEL;
+                return info;
+            case TypeOfCollinear::SGMNTSONONELINE:
+                info.result = IntersectionResult::COLLINEARNOOVERLAP;
+                return info;
+            case TypeOfCollinear::SGMNTSOVERLAP:
+                info.result = IntersectionResult::OVERLAPPING;
+                return info;
+            case TypeOfCollinear::SGMNTSTOUCH:
+                info.result = IntersectionResult::INTERSECTION;
+                if (sgm1.getStart() == sgm2.getStart() || sgm1.getStart() == sgm2.getEnd()) info.point  = sgm1.getStart();
+                if (sgm1.getEnd() == sgm2.getStart() || sgm1.getEnd() == sgm2.getEnd()) info.point =  sgm1.getEnd();
+                return info;
         }
     }
     
+    /*
+    Solving the parametric equation for lines:
+
+    P_v1 + t_v1 * v1 = P_v2 + t_v2 * v2    ( P_v1, P_v2 - start point of sgm1, sgm2.) 
+    t_v1 * v1 - t_v2 * v2 = P_v2 - P_v1 | (x v2)   (P_v2 - P_v1  = connection)
+
+    t_v1 * (v1 x v2) - 0 = (connection x v2)   
+    0 - t_v2 * (v2 x v1)  = (connection x v1) 
+
+    */
     Vector3D cross_v1_v2 = cross(v1,v2);
     Vector3D cross_connection_v2 = cross(connection,v2);
     double t_v1 = dot(cross_connection_v2, cross_v1_v2)/dot(cross_v1_v2,cross_v1_v2);
@@ -111,8 +130,12 @@ Vector3D Intersection(const Segment3D& sgm1, const Segment3D& sgm2) {
         t_v2 = 1.0;
     }
     
+    // Now for Segment. It is necessary that the parameters t_v1 and t_v2 are in [0,1].
     if (t_v1 >= 0.0 && t_v1 <= 1.0 && t_v2 >= 0.0 && t_v2 <= 1.0) {
-        return sgm1.getStart() + t_v1 * v1;
+        info.result = IntersectionResult::INTERSECTION;
+        info.point =  sgm1.getStart() + t_v1 * v1;
+        return info;
     }
-throw std::invalid_argument("No Intersection.");
+    info.result = IntersectionResult::NOINTERSECTION;
+    return info;
 }
