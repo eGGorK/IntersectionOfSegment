@@ -74,10 +74,12 @@ class Segment3D {
     Vector3D end;
 public:
     Segment3D() = delete;
-    Segment3D(Vector3D p_start, Vector3D p_end): start(p_start), end(p_end) {
+    Segment3D(Vector3D p_start, Vector3D p_end) {
         if ((p_end - p_start).IsZero()) {
             throw std::invalid_argument("Сan't create a segment");
         }
+        start = p_start;
+        end = p_end;
     }
 
     Vector3D getStart() const {
